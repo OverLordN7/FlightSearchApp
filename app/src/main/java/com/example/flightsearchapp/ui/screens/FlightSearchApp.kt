@@ -1,6 +1,10 @@
 package com.example.flightsearchapp.ui.screens
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -13,16 +17,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.flightsearchapp.data.Airport
 
 
+const val TAG = "FlightSearchApp"
 
+
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun FlightSearchApp(
     modifier: Modifier = Modifier,
     viewModel: AirportViewModel = viewModel(factory = AirportViewModel.factory)
 ){
 
-    Scaffold(modifier = Modifier.padding(8.dp)) { innerPadding->
+    val airports by viewModel.getAirports().collectAsState(emptyList())
+
+//    for (airport in airports){
+//        Log.d(TAG,"name: ${airport.name} and iata_code: ${airport.code}")
+//    }
+
+    Scaffold(modifier = Modifier.padding(8.dp)) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -30,15 +44,27 @@ fun FlightSearchApp(
             modifier = Modifier.padding(8.dp),
         ) {
             SearchRecord()
-            RecordCard(Modifier.padding(innerPadding))
-            RecordCard(Modifier.padding(innerPadding))
-            RecordCard(Modifier.padding(innerPadding))
-            RecordCard(Modifier.padding(innerPadding))
+            ListOfAirports(airports = airports)
+
         }
 
 
     }
 
+}
+
+@Composable
+fun ListOfAirports(airports: List<Airport>){
+    LazyColumn(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.padding(8.dp),
+    ) {
+
+        items(airports){item: Airport ->
+            RecordCard(airport = item)
+        }
+    }
 }
 
 @Composable
@@ -63,7 +89,7 @@ fun SearchRecord(modifier: Modifier = Modifier){
 
 
 @Composable
-fun RecordCard(modifier: Modifier = Modifier){
+fun RecordCard(airport: Airport,modifier: Modifier = Modifier){
     Card(
         elevation = 4.dp,
         modifier = modifier
@@ -76,12 +102,12 @@ fun RecordCard(modifier: Modifier = Modifier){
                 .padding(8.dp)
             ) {
             Text(
-                text = "SVO",
+                text = "${airport.code}",
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.width(20.dp))
 
-            Text(text = "Sheremetyevo - A.S. Pushkin international")
+            Text(text = "${airport.name}")
         }
     }
 }

@@ -11,17 +11,7 @@ data class Record(
 )
 
 
-@Entity("airport")
-data class Airport(
-    @PrimaryKey
-    val id: Int,
-    @ColumnInfo(name = "name")
-    val name: String,
-    @ColumnInfo(name = "iata_code")
-    val code: String,
-    @ColumnInfo(name = "passengers")
-    val passengers: Int,
-)
+
 
 @Entity("favorite")
 data class Favorite(
