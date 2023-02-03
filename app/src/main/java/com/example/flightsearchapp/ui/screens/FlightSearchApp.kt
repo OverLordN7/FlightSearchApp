@@ -30,11 +30,12 @@ fun FlightSearchApp(
     viewModel: AirportViewModel = viewModel(factory = AirportViewModel.factory)
 ){
 
-    val airports by viewModel.getAirports().collectAsState(emptyList())
-
-//    for (airport in airports){
-//        Log.d(TAG,"name: ${airport.name} and iata_code: ${airport.code}")
-//    }
+    //val airports by viewModel.getAirports().collectAsState(emptyList())
+    val record by viewModel.searchResult.collectAsState()
+    val airports by viewModel.getAirportsSatisfied(record).collectAsState(emptyList())
+    for (airport in airports){
+        Log.d(TAG,"name: ${airport.name} and iata_code: ${airport.code}")
+    }
 
     Scaffold(modifier = Modifier.padding(8.dp)) {
 
@@ -43,7 +44,25 @@ fun FlightSearchApp(
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.padding(8.dp),
         ) {
-            SearchRecord()
+            //SearchRecord(viewModel)
+            Card(
+                elevation = 4.dp,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+
+
+
+                TextField(
+                    value = record,
+                    onValueChange ={
+                        viewModel.updateSearchResult(it)},
+                    placeholder = { Text(text = "Enter flight record") },
+                    singleLine = true,
+                )
+            }
+
             ListOfAirports(airports = airports)
 
         }
@@ -68,19 +87,20 @@ fun ListOfAirports(airports: List<Airport>){
 }
 
 @Composable
-fun SearchRecord(modifier: Modifier = Modifier){
+fun SearchRecord(viewModel: AirportViewModel, modifier: Modifier = Modifier){
     Card(
         elevation = 4.dp,
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        var record by remember {
-            mutableStateOf("")
-        }
+        val record by viewModel.searchResult.collectAsState()
+
+
         TextField(
             value = record,
-            onValueChange ={record = it},
+            onValueChange ={
+                viewModel.updateSearchResult(it)},
             placeholder = { Text(text = "Enter flight record") },
             singleLine = true,
         )
